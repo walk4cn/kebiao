@@ -1,0 +1,15 @@
+// 顶层构建文件：依赖走阿里云镜像（本机 Gradle 缓存里已有 AGP 8.5.2，可离线）
+buildscript {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.5.2'
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.buildDir
+}
