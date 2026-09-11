@@ -43,7 +43,24 @@ App 内导入/导出与网页版一致（导入走系统文件选择器，导出
 ## 四、修改后重新打包 APK
 
 1. 改完 `index.html` / `data.js`；
-2. 跑 `bash build-apk.sh`（Android 工程在 `C:\Users\Lenovo\.workbuddy\projects\kebiao-apk`，**路径不能有空格**）；
+2. 跑 `bash build-apk.sh`；
 3. 产物覆盖回 `课表.apk`。
 
-> 签名用 `kebiao.jks`（alias `kebiao`），已排除在 git 外，不会上传。
+脚本会自动从 `android/` 同步工程到**无空格**的构建目录、必要时生成签名、构建并拷回 APK。
+
+### 打包环境（一次性）
+
+工具链装在 `~/.workbuddy-ai/binaries/android`（路径无空格）：
+
+| 组件 | 版本 | 路径 |
+|------|------|------|
+| JDK | Temurin 17 | `.../android/jdk-17` |
+| Android SDK | platform 36 + build-tools 36.0.0 | `.../android/sdk` |
+| Gradle | 8.7 | `.../android/gradle-8.7` |
+| 构建工程 | — | `~/.workbuddy/projects/kebiao-apk` |
+
+换电脑时不必改脚本：用 `ANDROID_TOOLS` / `APK_PROJ` 两个环境变量即可覆盖默认路径。
+依赖已缓存后可用 `KB_OFFLINE=1 bash build-apk.sh` 离线构建。
+
+> 签名用 `kebiao.jks`（alias `kebiao`，密码 `kebiao2026`），已排除在 git 外，不会上传。
+> **注意**：签名文件不入库，换电脑后会重新生成——新签名与旧 APK 不一致，手机上需要**先卸载旧版**再安装。
