@@ -3,38 +3,38 @@ window.SEED = {
  "periods": [
   {
    "name": "1-2节",
-   "start": "",
-   "end": ""
+   "start": "08:20",
+   "end": "10:00"
   },
   {
    "name": "1-4节",
-   "start": "",
-   "end": ""
+   "start": "08:20",
+   "end": "12:00"
   },
   {
    "name": "1-8节",
-   "start": "",
-   "end": ""
+   "start": "08:20",
+   "end": "17:40"
   },
   {
    "name": "3-4节",
-   "start": "",
-   "end": ""
+   "start": "10:20",
+   "end": "12:00"
   },
   {
    "name": "5-6节",
-   "start": "",
-   "end": ""
+   "start": "14:00",
+   "end": "15:40"
   },
   {
    "name": "5-8节",
-   "start": "",
-   "end": ""
+   "start": "14:00",
+   "end": "17:40"
   },
   {
    "name": "7-8节",
-   "start": "",
-   "end": ""
+   "start": "16:00",
+   "end": "17:40"
   }
  ],
  "courses": [

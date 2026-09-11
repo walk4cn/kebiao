@@ -346,6 +346,19 @@ const pnum=s=>{const m=String(s).match(/\d+/g)||[99];return m.map(Number)};
 const periods=()=>{const a=[...db.periods];
   return a.every(p=>p.start)?a.sort((x,y)=>String(x.start).localeCompare(String(y.start)))
     :a.sort((x,y)=>{const A=pnum(x.name),B=pnum(y.name);return A[0]-B[0]||(A[1]||A[0])-(B[1]||B[0])})};
+// 作息表节次名和课表不完全一致时（如课表「1-4节」vs 作息「第1节…第4节」），按小节号解析时间
+function pTime(name){
+  const p=db.periods.find(x=>x.name===name);
+  if(p&&p.start)return[p.start,p.end];
+  const q=pnum(name);if(q[0]===99)return['',''];
+  const cov=n=>db.periods.find(x=>{const a=pnum(x.name);return a[0]<=n&&n<=(a[1]===undefined?a[0]:a[1])&&x.start});
+  if(q.length>1){
+    const ex=db.periods.find(x=>{const a=pnum(x.name);return a[0]===q[0]&&(a[1]===undefined?a[0]:a[1])===q[q.length-1]&&x.start});
+    if(ex)return[ex.start,ex.end];
+  }
+  const s=cov(q[0]),e=cov(q[q.length-1]);
+  return s&&e?[s.start,e.end||s.end]:['',''];
+}
 
 /* ---------- 过滤 ---------- */
 function active(c){
@@ -398,7 +411,7 @@ function render(){
   ps.forEach((p,pi)=>{
     if(!DAYS.some((_,i)=>!off(i)&&cs.some(c=>c.period===p.name&&c.day===i)))return;
     any=true;
-    h+=`<tr><th class="tm"><span class="n">${esc(p.name)}</span>${p.start?`<span class="t">${esc(p.start)}${p.end?' – '+esc(p.end):''}</span>`:''}</th>`;
+    h+=`<tr><th class="tm"><span class="n">${esc(p.name)}</span>${(()=>{const[ts,te]=p.start?[p.start,p.end]:pTime(p.name);return ts?`<span class="t">${esc(ts)}${te?' – '+esc(te):''}</span>`:''})()}</th>`;
     DAYS.forEach((_,i)=>{
       const list=cs.filter(c=>c.period===p.name&&c.day===i);
       h+=`<td class="day ${off(i)?'hid':''}">`+
@@ -621,7 +634,8 @@ function expIcs(){
   const ics=v=>String(v).replace(/([,;\\])/g,'\\$1').replace(/\n/g,'\\n');
   let s='BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//kebiao//fudaoyuan//CN\nCALSCALE:GREGORIAN\n';
   list.forEach(c=>{
-    const p=db.periods.find(x=>x.name===c.period)||{start:'08:00',end:'08:45'};
+    const [ts0,te0]=pTime(c.period);
+    const p={start:ts0||'08:00',end:te0};
     const st=(p.start||'08:00').replace(':','');
     const en=(normT(p.end)||addMin(p.start||'08:00',45)).replace(':','');
     const {r,off}=rr(c),base=off+c.day;
