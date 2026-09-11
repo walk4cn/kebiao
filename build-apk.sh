@@ -43,7 +43,8 @@ mkdir -p "$PROJ/app/src/main/assets"
 cp -f "$ROOT"/android/*.gradle "$ROOT"/android/gradle.properties "$PROJ/" 2>/dev/null || true
 mkdir -p "$PROJ/app/src/main/java/com/kebiao/app" "$PROJ/app/src/main/res"
 cp -rf "$ROOT"/android/app/. "$PROJ/app/"
-rm -rf "$PROJ/app/build"
+# 不删 build 目录：Gradle 自带 up-to-date 检查，保留才能增量构建
+# （且批量删除会触发沙箱保护）。需要彻底重建时手动跑 gradle clean
 
 # 网页资源以工作区为准（assets 里的旧副本会被覆盖）
 cp -f "$ROOT/index.html" "$ROOT/data.js" "$PROJ/app/src/main/assets/"
