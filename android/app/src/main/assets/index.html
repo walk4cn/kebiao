@@ -70,6 +70,20 @@ header{
 .btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
 .wide-only{display:none}
 
+/* ---------- 今天 / 本学期当前周 ---------- */
+.tbar{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:12.5px;color:var(--ink-2);flex-wrap:wrap}
+.tbar .dt{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.tbar .sep{color:var(--line)}
+.tbar .wk b{color:var(--accent);font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbar .par{color:var(--ink-3);font-size:11.5px}
+.tbar .mut{color:var(--ink-3)}
+.tbar .jump{
+  margin-left:auto;height:24px;padding:0 10px;border-radius:999px;
+  border:1px solid rgba(14,109,130,.32);background:var(--accent-soft);color:var(--accent);
+  font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.14s var(--ease)
+}
+.tbar .jump:active{transform:scale(.96)}
+
 /* ---------- 星期条 ---------- */
 .days{display:none;gap:6px;margin-top:10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .days::-webkit-scrollbar{display:none}
@@ -220,6 +234,7 @@ label.rd{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var
       <input id="kw" type="text" placeholder="搜索 班级 / 课程 / 教室 / 教师" data-page-node-id="QKSyLxco7AokZoEPFj2IQH">
     </div>
   </div>
+  <div class="tbar" id="tbar"></div>
   <div class="days" id="days" data-page-node-id="NjkdpYBeAZfzVHZN7nAij0"></div>
 </header>
 
@@ -382,6 +397,41 @@ const vis=c=>{
   return active(c);
 };
 
+/* ---------- 今天 / 本学期当前周 ---------- */
+// 学期第一周的周一（未设置则返回 null）
+function termMonday(){
+  if(!db.meta.termStart)return null;
+  const d=new Date(db.meta.termStart+'T00:00:00');
+  return isNaN(d)?null:d;
+}
+// 今天属于本学期第几周：未设置开学日 -> null；还没开学 -> 0
+function todayWeek(){
+  const ts=termMonday();if(!ts)return null;
+  const now=new Date();now.setHours(0,0,0,0);
+  return Math.floor((now-ts)/864e5/7)+1;
+}
+function renderToday(){
+  const now=new Date(),w=todayWeek(),tw=+db.meta.termWeeks||20,view=+db.meta.week||1;
+  const dt=`${now.getMonth()+1}月${now.getDate()}日`;
+  const wd=DAYS[(now.getDay()+6)%7];
+  let info,act='';
+  if(w===null){info='<span class="mut">周次未设置</span>';act='<button class="jump" onclick="setTerm()">设置开学日</button>'}
+  else if(w<1)info='<span class="mut">还没开学</span>';
+  else if(w>tw)info='<span class="mut">学期已结束</span>';
+  else{
+    info=`<span class="wk">本学期第 <b>${w}</b> 周<span class="par">${w%2?'（单）':'（双）'}</span></span>`;
+    if(w!==view)act='<button class="jump" onclick="jumpToday()">回到本周</button>';
+  }
+  $('#tbar').innerHTML=`<span>今天 <span class="dt">${dt}</span> ${wd}</span><span class="sep">·</span>${info}${act}`;
+}
+function jumpToday(){const w=todayWeek();if(!w||w<1)return;db.meta.week=w;save();render()}
+function setTerm(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t==='s'));
+  ['c','p','s'].forEach(k=>$('#tab-'+k).style.display=k==='s'?'':'none');
+  openModal();
+  setTimeout(()=>$('#m_start').focus(),320);
+}
+
 /* ---------- 渲染 ---------- */
 function render(){
   const known=new Set(db.periods.map(p=>p.name));   // 课表里出现但作息表没有的节次：补一行，别让课消失
@@ -392,6 +442,7 @@ function render(){
   const week=+db.meta.week||1;
   $('#wkNum').textContent=week;
   $('#parity').textContent=week%2?'（单）':'（双）';
+  renderToday();
 
   $('#chips').innerHTML=['<div class="chip'+(sel.size?'':' on')+'" data-all>全部班级</div>']
     .concat([...new Set(db.courses.map(c=>c.cls))].sort()
@@ -653,7 +704,7 @@ function addMin(t,m){const[a,b]=String(t).split(':').map(Number);const d=new Dat
 
 function syncMeta(){$('#m_start').value=db.meta.termStart||'';$('#m_weeks').value=db.meta.termWeeks||20;$('#m_remind').value=db.meta.remind||10;$('#m_ck').value=db.meta.colorKey||'room'}
 ['m_start','m_weeks','m_remind'].forEach(id=>$('#'+id).onchange=()=>{
-  db.meta.termStart=$('#m_start').value;db.meta.termWeeks=+$('#m_weeks').value||20;db.meta.remind=+$('#m_remind').value||10;save();
+  db.meta.termStart=$('#m_start').value;db.meta.termWeeks=+$('#m_weeks').value||20;db.meta.remind=+$('#m_remind').value||10;save();render();
 });
 $('#m_ck').onchange=()=>{db.meta.colorKey=$('#m_ck').value;save();render()};
 function wipe(){if(confirm('清空全部课表与作息数据？建议先导出 CSV 备份。')){db={periods:[],courses:[],meta:db.meta};save();render();closeModal()}}
