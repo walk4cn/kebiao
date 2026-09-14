@@ -70,5 +70,6 @@ GRADLE_ARGS=(assembleRelease)
 # ---------- 5. 拷回工作区 ----------
 APK="$PROJ/app/build/outputs/apk/release/app-release.apk"
 [ -f "$APK" ] || die "构建未产出 APK：$APK"
-cp -f "$APK" "$ROOT/课表.apk"
-echo "OK -> $ROOT/课表.apk"
+OUT="${APK_NAME:-昌老师的课表.apk}"     # 想改名不用改脚本：APK_NAME=xxx.apk bash build-apk.sh
+cp -f "$APK" "$ROOT/$OUT"
+echo "OK -> $ROOT/$OUT"
