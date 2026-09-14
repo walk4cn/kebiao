@@ -258,7 +258,7 @@ label.rd{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var
       <div class="hint" data-page-node-id="NusnQNIzo4RDQe7CTTSavV">列名表头（必填 <b data-page-node-id="tn0ey4BHns9favF7Xjjayn">班级、星期、节次</b>，其余可选）；若作息表里没有对应节次，可用「开始/结束」列直接写时间，会自动建节次。支持从 Excel 直接复制粘贴（制表符）或上传 CSV。</div>
       <textarea id="ta-c" placeholder="班级,星期,节次,课程,教室,教师,周次"></textarea>
       <div class="row" data-page-node-id="aYz7nfZwjUmOIcMkxOAl83">
-        <input type="file" id="file-c" accept=".csv,.txt,.tsv" data-page-node-id="Hz2ubHboOaSBE6iAwIoQrQ">
+        <input type="file" id="file-c" accept="text/csv,text/comma-separated-values,application/csv,text/plain,.csv,.txt,.tsv" data-page-node-id="Hz2ubHboOaSBE6iAwIoQrQ">
         <button class="btn" onclick="$('#ta-c').value='班级,星期,节次,开始,结束,课程,教室,教师,周次'" data-page-node-id="7dTEbpNc4Gq2vyG3D8g9jZ">表头模板</button>
         <button class="btn" id="p-c" data-page-node-id="9aX0AeCWREdxOZou1FG0DM">解析</button>
       </div>
@@ -287,7 +287,7 @@ label.rd{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var
       <div class="hint" data-page-node-id="cFmYhP5Pa0HHMdzAXLlpDw">作息时间表：<b data-page-node-id="dYATiyjGajnMIaY0Citwo7">节次,开始,结束</b>（24 小时制）。导入后课表里的「节次」才能对上时间点。</div>
       <textarea id="ta-p" placeholder="节次,开始,结束"></textarea>
       <div class="row" data-page-node-id="Ytzg7wiwIGDyp2P50rw3Dl">
-        <input type="file" id="file-p" accept=".csv,.txt,.tsv" data-page-node-id="DENcOZH1VXZf4ecj4KnI66">
+        <input type="file" id="file-p" accept="text/csv,text/comma-separated-values,application/csv,text/plain,.csv,.txt,.tsv" data-page-node-id="DENcOZH1VXZf4ecj4KnI66">
         <button class="btn" onclick="$('#ta-p').value='节次,开始,结束'" data-page-node-id="SyxxvSz2CiwSZyHhI85Vtf">表头模板</button>
         <button class="btn" id="p-p" data-page-node-id="teeaQsgmEFf2BXyowDLgej">解析</button>
         <button class="btn primary" style="margin-left:auto" id="ok-p" data-page-node-id="d6ZekcASDdGI5bqMbpkj3A">导入（覆盖）</button>

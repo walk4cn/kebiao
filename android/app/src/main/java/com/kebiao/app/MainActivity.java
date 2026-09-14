@@ -94,16 +94,26 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** 导入课表时的系统文件选择器 */
+    /**
+     * 导入课表时的系统文件选择器。
+     * 不用 p.createIntent()：它会把 accept=".csv,.txt,.tsv" 原样当 MIME 传给系统，
+     * 而 ".csv" 不是合法 MIME 类型，选择器按它过滤会匹配不到任何文件，导致全部置灰选不了。
+     * 这里自己构造 Intent，类型放宽为「任意文件」，App 本来就是按文本读取的。
+     */
     private class Chrome extends WebChromeClient {
         @Override public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
             if (fileCb != null) fileCb.onReceiveValue(null);
             fileCb = cb;
             try {
-                startActivityForResult(p.createIntent(), REQ_FILE);
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("*/*");
+                startActivityForResult(Intent.createChooser(i, "选择课表文件"), REQ_FILE);
                 return true;
             } catch (Exception e) {
+                if (fileCb != null) fileCb.onReceiveValue(null);
                 fileCb = null;
+                Toast.makeText(MainActivity.this, "此系统不支持选择文件", Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
