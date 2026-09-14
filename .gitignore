@@ -9,3 +9,6 @@ android/local.properties
 
 # PDF 抽取中间产物
 parsed.json
+
+# 原始课表 PDF（含全校班级信息，不入库）
+*.pdf
