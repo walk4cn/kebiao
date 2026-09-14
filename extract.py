@@ -1,7 +1,9 @@
 # ponytail: 一次性脚本，只为把《班级课表(光谷校区)8.30.pdf》抽成 CSV / data.js，不做通用 PDF 解析
+# 用法: python extract.py [PDF路径]   # 不传则用工作区里的《班级课表 (光谷校区)8.30.pdf》
+# 产出 parsed.json（含 PDF 里全部班级），再由 gen.py 按白名单筛
 import pymupdf, re, json, sys, io
 
-PDF = r'C:\Users\Lenovo\Desktop\班级课表 (光谷校区)8.30.pdf'
+PDF = sys.argv[1] if len(sys.argv) > 1 else r'C:\project\kebiao\班级课表 (光谷校区)8.30.pdf'
 DIRS = ['建筑工程方向', '道路桥梁方向']
 MARK = '★☆◆■'
 
